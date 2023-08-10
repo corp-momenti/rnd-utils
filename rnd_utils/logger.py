@@ -16,12 +16,40 @@ import sys
 import json
 import logging
 from loguru import logger
+import functools
+import time
 
 from datadog_api_client import ApiClient, Configuration
 from datadog_api_client.v2.model.http_log import HTTPLog
 from datadog_api_client.v2.model.http_log_item import HTTPLogItem
 from datadog_api_client.v2.api.logs_api import LogsApi
 from datadog_api_client.v2.model.content_encoding import ContentEncoding
+
+
+def logger_wraps(*, entry=True, exit=True, level="DEBUG"):
+    def wrapper(func):
+        name = func.__name__
+
+        @functools.wraps(func)
+        def wrapped(*args, **kwargs):
+            logger_ = logger.opt(depth=1)
+            start = time.time()
+            if entry:
+                logger_.log(
+                    level, "Entering '{}' (args={}, kwargs={})", name, args, kwargs
+                )
+            result = func(*args, **kwargs)
+            end = time.time()
+            logger_.log(level, "Function '{}' executed in {:f} s", name, end - start)
+
+            if exit:
+                logger_.log(level, "Exiting '{}' (result={})", name, result)
+
+            return result
+
+        return wrapped
+
+    return wrapper
 
 
 class DatadogHandler(logging.Handler):
