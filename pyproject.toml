@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "rnd-utils"
+version = "0.1.0"
+description = ""
+authors = ["lambrosopos <san.kim@momenti.tv>"]
+readme = "README.md"
+packages = [{include = "rnd_utils"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "^7.4.0"
+loguru = "^0.7.0"
+datadog-api-client = "^2.15.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
