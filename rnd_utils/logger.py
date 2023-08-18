@@ -10,11 +10,17 @@ Operates with environment variables:
 - HOST_NAME: Name of the host instance
 - SERVICE_NAME: Name of the service
 
+If using a docker container, additional env variables can be provided
+
+- DOCKER_CONTAINER_NAME: Name of docker container
+- DOCKER_IMAGE_NAME: Name of docker image used
+
 """
 import os
 import sys
 import json
 import logging
+import platform
 from loguru import logger
 import functools
 import time
@@ -61,6 +67,7 @@ class DatadogHandler(logging.Handler):
         self.configuration = None
         self.api_client = ApiClient(self.configuration)
         self.logs = LogsApi(self.api_client)
+        self.datadog_tags = None
 
     @property
     def configuration(self):
@@ -77,6 +84,25 @@ class DatadogHandler(logging.Handler):
     @configuration.setter
     def configuration(self, configuration: Configuration):
         self._configuration = configuration
+
+    @property
+    def datadog_tags(self):
+        if self._datadog_tags is None:
+            ddtags = [f"env:{os.getenv('ENV')}"]
+
+            if os.getenv("DOCKER_CONTAINER_NAME"):
+                ddtags.append(f"container_name:{os.getenv('DOCKER_CONTAINER_NAME')}")
+
+            if os.getenv("DOCKER_IMAGE_NAME"):
+                ddtags.append(f"image_name:{os.getenv('DOCKER_IMAGE_NAME')}")
+
+            self._datadog_tags = ddtags
+
+        return self._datadog_tags
+
+    @datadog_tags.setter
+    def datadog_tags(self, ddtags: list[str]):
+        self._datadog_tags = ddtags
 
     def emit(self, record):
         toJson = json.dumps(
@@ -112,8 +138,8 @@ class DatadogHandler(logging.Handler):
                 [
                     HTTPLogItem(
                         ddsource="Python",
-                        ddtags="env:{}".format(os.getenv("ENV")),
-                        hostname=os.getenv("HOST_NAME"),
+                        ddtags=",".join(self.datadog_tags),
+                        hostname=os.getenv("HOST_NAME", platform.uname()[1]),
                         message=toJson,
                         service=os.getenv("SERVICE_NAME"),
                         status=record.levelname.lower(),
