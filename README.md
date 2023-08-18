@@ -20,6 +20,18 @@ from rnd_utils.logger import logger
 logger.info("This is info level log")
 ```
 
+### Datadog Loggings
+
+To send logs to datadog, using the logger, appropriate environment variables need to be set.
+
+3 Main environment variables are as follows.
+- DD_API_KEY: Datadog API Key
+- DD_APP_KEY: Datadog APP Key
+- DD_SITE: Datadog site. For example datadog.eu
+
+Other environment variables can be set additionally for more context.
+Please view `logger.py` module docs for more information.
+
 ### Function Logger Wraps
 
 `logger_wraps` is a Python decorator that facilitates logging for function entry and exit, along with execution time measurement. This decorator is particularly useful for adding structured logging to your functions, helping you to monitor and debug their behavior more effectively.
