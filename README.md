@@ -8,7 +8,7 @@ Common utilities for general usage.
 $ poetry install
 ```
 
-### Logger
+## Logger
 
 Logger is implemented using loguru, adding datadog handler if environment variables exist for connection.
 
@@ -52,3 +52,20 @@ def my_function(arg1, arg2, kwarg1=None):
     return result
 
 ```
+
+## File Utils
+
+Functions related to file operations.
+
+### Usage
+
+```py
+from rnd_utils import file_utils
+```
+
+### Features
+
+- Save Temporary file and receive temp file name for further operations
+- Download file with a URL and save as temporary file
+- Hash bytes content to md5
+- Encode file to url safe base-64 encoded
