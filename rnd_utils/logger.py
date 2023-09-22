@@ -112,7 +112,7 @@ class DatadogHandler(logging.Handler):
                     "py-message": record.getMessage(),
                     "py-status": record.levelname.lower(),
                     "py-logger": record.name,
-                    "py-stacktrace": record.exc_info,
+                    "py-stacktrace": str(record.exc_info),
                     "py-exception": record.exc_text,
                     "py-line": record.lineno,
                     "py-file": record.filename,
@@ -161,6 +161,6 @@ if os.getenv("DD_API_KEY") and os.getenv("DD_APP_KEY"):
         DatadogHandler(
             api_key=os.getenv("DD_API_KEY"),
             app_key=os.getenv("DD_APP_KEY"),
-            site=os.getenv("DD_SITE"),
+            site=os.getenv("DD_SITE", "us5.datadoghq.com"),
         )
     )
